@@ -1,0 +1,21 @@
+name: timeout
+on: workflow_dispatch
+jobs:
+  slow:
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    steps:
+      - run: echo "main-start $(date +%s)"; sleep 300; echo main-end
+      - if: always()
+        run: echo "always-ran $(date +%s)"
+      - if: cancelled()
+        run: echo "cancelled-step-ran"
+      - if: failure()
+        run: echo "failure-step-ran"
+      - run: echo "plain-step-ran"
+  after:
+    needs: slow
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "needs.slow.result=${{ needs.slow.result }}"

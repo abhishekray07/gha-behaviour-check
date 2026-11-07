@@ -1,0 +1,24 @@
+name: cancel
+on: workflow_dispatch
+jobs:
+  work:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "main-start $(date +%s)"; sleep 600
+      - if: always()
+        run: |
+          trap 'echo "got-signal $(date +%s)"' INT TERM
+          echo "cleanup-start $(date +%s)"
+          for i in $(seq 200); do echo "cleanup-alive $(date +%s)"; sleep 5; done
+  cleanup:
+    needs: work
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "plain-step-ran needs.work.result=${{ needs.work.result }}"
+      - if: cancelled()
+        run: echo "cancelled-step-ran"
+      - if: always()
+        run: echo "always-step-ran"
+      - if: success()
+        run: echo "success-step-ran"
