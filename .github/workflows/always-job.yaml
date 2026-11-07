@@ -1,0 +1,19 @@
+name: always-job
+on: workflow_dispatch
+jobs:
+  d:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo d
+  notify:
+    needs: d
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "notify-start $(date +%s)"; sleep 60; echo "notify-end $(date +%s)"
+      - run: echo "notify-second-step"
+  plain:
+    needs: d
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "plain-start $(date +%s)"; sleep 60; echo "plain-end $(date +%s)"
