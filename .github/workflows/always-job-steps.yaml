@@ -1,0 +1,32 @@
+name: always-job-steps
+on: workflow_dispatch
+jobs:
+  d:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo d
+  notify:
+    needs: d
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "notify-start $(date +%s)"; sleep 60; echo "notify-end $(date +%s)"
+      - name: plain-after
+        run: echo plain-after
+      - name: success-after
+        if: success()
+        run: echo success-after
+      - name: cancelled-after
+        if: cancelled()
+        run: echo cancelled-after
+      - name: failure-after
+        if: failure()
+        run: echo failure-after
+      - name: always-after
+        if: always()
+        run: echo always-after
+  plain:
+    needs: d
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "plain-start $(date +%s)"; sleep 60; echo "plain-end $(date +%s)"
